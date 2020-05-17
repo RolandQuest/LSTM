@@ -9,81 +9,61 @@ namespace lstm
 {
 
 	///
-	/// A simple matrix.
-	/// Each row is its own vector.
+	/// A simple matrix with static size.
+	/// Each row is a vector.
 	///
 	class matrix
 	{
 
 	private:
 
-		vector* _data;
-		size_t _rows;
-		size_t _columns;
+		vector* _data = nullptr;
+		size_t _rows = 0;
+		size_t _columns = 0;
+
+		void deleteData();
 
 	public:
 
+		//! Creates a square matrix with given size.
 		matrix( size_t rows, size_t columns );
 
+		//! Copy constructor.
+		matrix( const matrix& other );
+
+		//! Move constructor.
+		matrix( matrix&& other ) noexcept;
+
+		//! Basic destructor.
 		virtual ~matrix();
 
-		size_t rows() const;
-		size_t columns() const;
+
+		//! Assignment operator.
+		matrix& operator=( const matrix& other );
+
+		//! Move assignment operator.
+		matrix& operator=( matrix&& other ) noexcept;
+
+		//! Standard matrix multiplication.
+		matrix operator*( const matrix& rhMat ) const;
+
+		//! Matrix multiplied by vector.
+		vector operator*( const vector& rhVec ) const;
+
+		//! Accesses a row.
 		vector& operator[]( size_t pos );
-		vector columnVector( size_t col );
+
+
+		//! Returns the number of rows.
+		size_t rows() const;
+
+		//! Returns the number of columns.
+		size_t columns() const;
+
+		//! Creates a vector for a column.
+		vector columnVector( size_t col ) const;
+
 	};
-
-	double dotproduct(const vector& v1, const vector& v2) {
-		assert(v1.size() == v2.size());
-		double ret = 0.0;
-		for (int i = 0; i < v1.size(); i++) {
-			ret += v1.at(i) * v2.at(i);
-		}
-		return ret;
-	}
-
-	void mult(matrix& mat1, matrix& mat2, matrix& container) {
-
-		assert(mat1.columns() == mat2.rows());
-		assert(container.rows() == mat1.rows());
-		assert(container.columns() == mat2.columns());
-
-		for (int rowI = 0; rowI < container.rows(); rowI++) {
-			for (int colI = 0; colI < container[rowI].size(); colI++) {
-				container[rowI][colI] = dotproduct(mat1[rowI], mat2.columnVector(colI));
-			}
-		}
-	}
-
-	void mult(matrix& mat, vector& vec, vector& container) {
-		
-		assert(mat.columns() == vec.size());
-		assert(container.size() == mat.rows());
-
-		for (int i = 0; i < container.size(); i++) {
-			container[i] = dotproduct(mat[i], vec);
-		}
-	}
-
-	void mult(vector& vec1, vector& vec2, vector& container) {
-
-		assert(vec1.size() == vec2.size());
-		assert(container.size() == vec2.size());
-
-		for (int i = 0; i < container.size(); i++) {
-			container[i] = vec1[i] * vec2[i];
-		}
-	}
-
-	void add(vector& vec1, vector& vec2, vector& container) {
-
-		assert(vec1.size() == vec2.size());
-		assert(container.size() == vec2.size());
-
-		for (int i = 0; i < container.size(); i++) {
-			container[i] = vec1[i] + vec2[i];
-		}
-	}
 
 }
 
