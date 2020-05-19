@@ -7,66 +7,46 @@
 
 namespace lstm
 {
-  double sigmoid( double val ) {
-    return 1 / ( 1 + exp( -val ) );
-  }
-  double tanh( double val ) {
-    double e2 = pow( exp( val ), 2 );
-    return ( e2 - 1 ) / ( e2 + 1 );
-  }
-  vector activate( double( *foo )( double ), const vector& vec ) {
-    vector ret( vec.size() );
-    for ( size_t i = 0; i < vec.size(); i++ ) {
-      ret[i] = foo( vec.at( i ) );
-    }
-    return ret;
-  }
 
+  struct timestep_meta {
+    vector Eht, Ext, Ect, Eout;
+    vector ft, it, ct, ot;
+    vector xt, ht;
+  };
 
   class lstm_cell {
 
-  private:
+  public:
+  //private:
 
-    vector* Xt;
-    vector* Ht;
-    vector* Ct;
+    vector Xt;
+    vector Ht;
+    vector Ct;
 
-    matrix* WeightF;
-    matrix* WeightI;
-    matrix* WeightC;
-    matrix* WeightO;
+    matrix WeightF;
+    matrix WeightI;
+    matrix WeightC;
+    matrix WeightO;
+
+    double BiasF = 0.0;
+    double BiasI = 0.0;
+    double BiasC = 0.0;
+    double BiasO = 0.0;
 
   public:
 
-    lstm_cell( size_t iSize, size_t oSize ) {
+    //! Basic constructor.
+    lstm_cell( size_t iSize, size_t oSize );
 
-      Xt = new vector( iSize );
-      Ht = new vector( oSize );
-      Ct = new vector( oSize );
+    //! Basic destructor.
+    virtual ~lstm_cell() = default;
 
-      WeightF = new matrix( oSize, iSize + oSize );
-      WeightI = new matrix( oSize, iSize + oSize );
-      WeightC = new matrix( oSize, iSize + oSize );
-      WeightO = new matrix( oSize, iSize + oSize );
-    }
 
-    void SetInput( const vector& input ) {
-      for ( size_t i = 0; i < Xt->size(); i++ ) {
-        Xt[i] = input.at( i );
-      }
-    }
+    //! Sets the input (Xt).
+    void SetInput( const vector& input );
 
-    void Activate() {
-
-      vector HtXt = Ht->append( *Xt );
-      vector ft = activate( &sigmoid, *WeightF * HtXt );
-      vector it = activate( &tanh, *WeightC * HtXt );
-      vector ct = activate( &tanh, *WeightI * HtXt );
-      vector ot = activate( &sigmoid, *WeightO * HtXt );
-
-      *Ct = *Ct * ft + ct * it;
-      *Ht = activate( &tanh, *Ct ) * ot;
-    }
+    //! Does a forward passes of the cell.
+    void Activate();
 
   };
 

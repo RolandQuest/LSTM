@@ -21,14 +21,12 @@ namespace lstm
   }
 
   matrix::matrix( const matrix& other ) {
-    if ( this != &other ) {
-      _rows = other._rows;
-      _columns = other._columns;
-      _data = ( vector* ) operator new[]( sizeof( vector )* _rows );
-      for ( int i = 0; i < other._rows; i++ ) {
-        new ( _data + i ) vector( other._columns );
-        std::memcpy( ( _data + i )->_data, ( other._data + i )->_data, _columns * sizeof( double ) );
-      }
+    _rows = other._rows;
+    _columns = other._columns;
+    _data = ( vector* ) operator new[]( sizeof( vector )* _rows );
+    for ( int i = 0; i < other._rows; i++ ) {
+      new ( _data + i ) vector( other._columns );
+      std::memcpy( (*this)[i]._data, other[i]._data, _columns * sizeof( double ) );
     }
   }
 
@@ -53,7 +51,7 @@ namespace lstm
       _data = ( vector* ) operator new[]( sizeof( vector )* _rows );
       for ( int i = 0; i < other._rows; i++ ) {
         new ( _data + i ) vector( other._columns );
-        std::memcpy( ( _data + i )->_data, ( other._data + i )->_data, _columns * sizeof( double ) );
+        std::memcpy( (*this)[i]._data, other[i]._data, _columns * sizeof( double ) );
       }
     }
     return *this;
@@ -91,6 +89,11 @@ namespace lstm
   }
 
   vector& matrix::operator[]( size_t pos ) {
+    assert( pos < _rows );
+    return _data[pos];
+  }
+
+  const vector& matrix::operator[]( size_t pos ) const {
     assert( pos < _rows );
     return _data[pos];
   }

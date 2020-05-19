@@ -25,6 +25,9 @@ namespace lstm
 
 	public:
 
+		//! Creates an empty matrix.
+		matrix() = default;
+
 		//! Creates a square matrix with given size.
 		matrix( size_t rows, size_t columns );
 
@@ -52,6 +55,9 @@ namespace lstm
 
 		//! Accesses a row.
 		vector& operator[]( size_t pos );
+
+		//! Accesses a row.
+		const vector& operator[]( size_t pos ) const;
 
 
 		//! Returns the number of rows.
