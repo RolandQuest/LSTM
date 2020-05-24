@@ -5,7 +5,7 @@
 
 #include "vector.h"
 
-namespace lstm
+namespace ml
 {
 
 	///
@@ -47,12 +47,6 @@ namespace lstm
 		//! Move assignment operator.
 		matrix& operator=( matrix&& other ) noexcept;
 
-		//! Standard matrix multiplication.
-		matrix operator*( const matrix& rhMat ) const;
-
-		//! Matrix multiplied by vector.
-		vector operator*( const vector& rhVec ) const;
-
 		//! Accesses a row.
 		vector& operator[]( size_t pos );
 
@@ -69,7 +63,15 @@ namespace lstm
 		//! Creates a vector for a column.
 		vector columnVector( size_t col ) const;
 
+		//! Transposes the matrix.
+		matrix& transpose();
+
 	};
+
+	matrix transpose( const matrix& mat );
+	matrix operator*( const matrix& lhm, const matrix& rhm );
+	vector operator*( const matrix& mat, const vector& vec );
+	vector operator*( const vector& vec, const matrix& mat );
 
 }
 

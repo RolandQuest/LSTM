@@ -1,10 +1,10 @@
-#ifndef LSTM_VECTOR_H
-#define LSTM_VECTOR_H
+#ifndef ml_VECTOR_H
+#define ml_VECTOR_H
 
 #include <assert.h>
 #include <memory>
 
-namespace lstm {
+namespace ml {
 
   ///
   /// A vector of doubles.
@@ -61,7 +61,7 @@ namespace lstm {
     vector sub( size_t offset, size_t dimensions ) const;
 
     //! Appends the vector onto the current vector.
-    vector append( vector& other ) const;
+    vector append( const vector& other ) const;
 
     //! Returns the dimensions of this vector.
     size_t size() const;

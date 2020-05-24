@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-namespace lstm
+namespace ml
 {
   vector::vector( size_t dimensions ) {
     _dimensions = dimensions;
@@ -134,7 +134,7 @@ namespace lstm
     return ret;
   }
 
-  vector vector::append( vector& other ) const {
+  vector vector::append( const vector& other ) const {
     vector ret( _dimensions + other._dimensions );
     std::memcpy( ret._data, _data, _dimensions * sizeof( double ) );
     std::memcpy( ret._data + _dimensions, other._data, other._dimensions * sizeof( double ) );

@@ -1,26 +1,43 @@
 #include "lstm.h"
 
-namespace lstm
+namespace ml
 {
-  lstm_cell::lstm_cell( size_t iSize, size_t oSize ) {
+  lstm::lstm( size_t iSize, size_t oSize ) {
 
     Xt = vector( iSize );
     Ht = vector( oSize );
     Ct = vector( oSize );
 
-    WeightF = matrix( oSize, iSize + oSize );
-    WeightI = matrix( oSize, iSize + oSize );
-    WeightC = matrix( oSize, iSize + oSize );
-    WeightO = matrix( oSize, iSize + oSize );
+    Wf = trainable_matrix( oSize, iSize );
+    Wi = trainable_matrix( oSize, iSize );
+    Wo = trainable_matrix( oSize, iSize );
+    Wc = trainable_matrix( oSize, iSize );
+
+    Uf = trainable_matrix( oSize, oSize );
+    Ui = trainable_matrix( oSize, oSize );
+    Uc = trainable_matrix( oSize, oSize );
+    Uo = trainable_matrix( oSize, oSize );
   }
 
-  void lstm_cell::SetInput( const vector& input ) {
+  size_t lstm::inputSize() const {
+    return Xt.size();
+  }
+
+  size_t lstm::outputSize() const {
+    return Ht.size();
+  }
+
+  void lstm::setInput( const vector& input ) {
     for ( size_t i = 0; i < Xt.size(); i++ ) {
       Xt[i] = input[i];
     }
   }
 
-  void lstm_cell::Activate() {
+  const vector& lstm::getOutput() const {
+    return Ht;
+  }
+
+  void lstm::activate() {
 
     /*
     True code. Commented out for experimental reasons.
@@ -37,17 +54,16 @@ namespace lstm
     Ht = tanh( Ct ) * ot;
     */
 
-
+    /*
     timestep_meta meta1;
     Xt[0] = 1;
     Xt[1] = 2;
     meta1.xt = Xt;
 
-    vector HtXt = Ht.append( Xt );
-    meta1.ft = sigmoid( WeightF * HtXt + BiasF );
-    meta1.it = sigmoid( WeightI * HtXt + BiasI );
-    meta1.ct = tanh( WeightC * HtXt + BiasC );
-    meta1.ot = sigmoid( WeightO * HtXt + BiasO );
+    meta1.ft = sigmoid( Wf * Xt + Uf * Ht + BiasF );
+    meta1.it = sigmoid( Wi * Xt + Ui * Ht + BiasI );
+    meta1.ct = tanh( Wc * Xt + Uc * Ht + BiasC );
+    meta1.ot = sigmoid( Wo * Xt + Uo * Ht + BiasO );
 
     Ct = Ct * meta1.ft + meta1.ct * meta1.it;
     Ht = tanh( Ct ) * meta1.ot;
@@ -60,11 +76,10 @@ namespace lstm
     Xt[1] = 3;
     meta2.xt = Xt;
 
-    HtXt = Ht.append( Xt );
-    meta2.ft = sigmoid( WeightF * HtXt + BiasF );
-    meta2.it = sigmoid( WeightI * HtXt + BiasI );
-    meta2.ct = tanh( WeightC * HtXt + BiasC );
-    meta2.ot = sigmoid( WeightO * HtXt + BiasO );
+    meta2.ft = sigmoid( Wf * Xt + Uf * Ht + BiasF );
+    meta2.it = sigmoid( Wi * Xt + Ui * Ht + BiasI );
+    meta2.ct = tanh( Wc * Xt + Uc * Ht + BiasC );
+    meta2.ot = sigmoid( Wo * Xt + Uo * Ht + BiasO );
 
     Ct = Ct * meta2.ft + meta2.ct * meta2.it;
     Ht = tanh( Ct ) * meta2.ot;
@@ -79,6 +94,15 @@ namespace lstm
     vector ecv = ect * meta2.it * ( 1 - pow( meta2.ct, 2 ) );
     //vector ei = ect * meta2.ct * meta2.it * ( meta2.it - 1 ) * -1;
 
+    */
+  }
+
+  void lstm::learn( const vector& error, double learningRate ) {
 
   }
+
+  void lstm::applyLearnings() {
+
+  }
+
 }

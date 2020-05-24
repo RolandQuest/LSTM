@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-namespace lstm
+namespace ml
 {
   void matrix::deleteData() {
 
@@ -68,26 +68,6 @@ namespace lstm
     return *this;
   }
 
-  matrix matrix::operator*( const matrix& rhMat ) const {
-    assert( _columns == rhMat.rows() );
-    matrix ret( _rows, rhMat.columns() );
-    for ( int rowI = 0; rowI < ret.rows(); rowI++ ) {
-      for ( int colI = 0; colI < ret[rowI].size(); colI++ ) {
-        ret[rowI][colI] = _data[rowI].dotproduct( rhMat.columnVector(colI) );
-      }
-    }
-    return ret;
-  }
-
-  vector matrix::operator*( const vector& rhVec ) const {
-    assert( _columns == rhVec.size() );
-    vector ret( _rows );
-    for ( int i = 0; i < _rows; i++ ) {
-      ret[i] = _data[i].dotproduct( rhVec );
-    }
-    return ret;
-  }
-
   vector& matrix::operator[]( size_t pos ) {
     assert( pos < _rows );
     return _data[pos];
@@ -113,6 +93,45 @@ namespace lstm
       ret[i] = _data[i][col];
     }
     return ret;
+  }
+
+  matrix& matrix::transpose() {
+    *this = ml::transpose( *this );
+    return *this;
+  }
+
+  matrix transpose( const matrix& mat ) {
+    matrix ret( mat.columns(), mat.rows() );
+    for ( int rowI = 0; rowI < ret.rows(); rowI++ ) {
+      for ( int colI = 0; colI < ret[rowI].size(); colI++ ) {
+        ret[rowI][colI] = mat[colI][rowI];
+      }
+    }
+    return ret;
+  }
+
+  matrix operator*( const matrix& lhm, const matrix& rhm ) {
+    assert( lhm.columns() == rhm.rows() );
+    matrix ret( lhm.rows(), rhm.columns() );
+    for ( int rowI = 0; rowI < ret.rows(); rowI++ ) {
+      for ( int colI = 0; colI < ret[rowI].size(); colI++ ) {
+        ret[rowI][colI] = lhm[rowI].dotproduct( rhm.columnVector( colI ) );
+      }
+    }
+    return ret;
+  }
+
+  vector operator*( const matrix& mat, const vector& vec ) {
+    assert( mat.columns() == vec.size() );
+    vector ret( mat.rows() );
+    for ( int i = 0; i < ret.size(); i++ ) {
+      ret[i] = mat[i].dotproduct( vec );
+    }
+    return ret;
+  }
+
+  vector operator*( const vector& vec, const matrix& mat ) {
+    return mat * vec;
   }
 
 }
