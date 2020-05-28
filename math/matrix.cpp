@@ -2,6 +2,23 @@
 
 namespace ml
 {
+  void swap( matrix& mat1, matrix& mat2 ) {
+
+    using std::swap;
+    swap( mat1._data, mat2._data );
+    swap( mat1._rows, mat2._rows );
+    swap( mat1._columns, mat2._columns );
+  }
+
+  void matrix::createData( size_t rows, size_t columns ) {
+    _rows = rows;
+    _columns = columns;
+    _data = ( vector* ) operator new[]( sizeof( vector )* rows );
+    for ( int i = 0; i < rows; i++ ) {
+      new ( _data + i ) vector( columns );
+    }
+  }
+
   void matrix::deleteData() {
 
     for ( int i = 0; i < _rows; i++ ) {
@@ -12,31 +29,20 @@ namespace ml
   }
 
   matrix::matrix( size_t rows, size_t columns ) {
-    _rows = rows;
-    _columns = columns;
-    _data = ( vector* ) operator new[]( sizeof( vector )* rows );
-    for ( int i = 0; i < rows; i++ ) {
-      new ( _data + i ) vector( columns );
-    }
+    createData( rows, columns );
   }
 
   matrix::matrix( const matrix& other ) {
-    _rows = other._rows;
-    _columns = other._columns;
-    _data = ( vector* ) operator new[]( sizeof( vector )* _rows );
+
+    createData( other._rows, other._columns );
+
     for ( int i = 0; i < other._rows; i++ ) {
-      new ( _data + i ) vector( other._columns );
-      std::memcpy( (*this)[i]._data, other[i]._data, _columns * sizeof( double ) );
+      std::copy(other[i]._data, other[i]._data + other[i]._dimensions, (*this)[i]._data );
     }
   }
 
   matrix::matrix( matrix&& other ) noexcept {
-    _rows = other._rows;
-    _columns = other._columns;
-    _data = other._data;
-    other._rows = 0;
-    other._columns = 0;
-    other._data = nullptr;
+    swap( *this, other );
   }
 
   matrix::~matrix() {
@@ -44,27 +50,13 @@ namespace ml
   }
 
   matrix& matrix::operator=( const matrix& other ) {
-    if ( this != &other ) {
-      deleteData();
-      _rows = other._rows;
-      _columns = other._columns;
-      _data = ( vector* ) operator new[]( sizeof( vector )* _rows );
-      for ( int i = 0; i < other._rows; i++ ) {
-        new ( _data + i ) vector( other._columns );
-        std::memcpy( (*this)[i]._data, other[i]._data, _columns * sizeof( double ) );
-      }
-    }
+    matrix temp( other );
+    swap( *this, temp );
     return *this;
   }
 
   matrix& matrix::operator=( matrix&& other ) noexcept {
-    deleteData();
-    _rows = other._rows;
-    _columns = other._columns;
-    _data = other._data;
-    other._rows = 0;
-    other._columns = 0;
-    other._data = nullptr;
+    swap( *this, other );
     return *this;
   }
 

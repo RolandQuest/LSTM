@@ -4,15 +4,26 @@
 
 namespace ml
 {
+  void swap( vector& vec1, vector& vec2 ) {
+    using std::swap;
+    swap( vec1._data, vec2._data );
+    swap( vec1._dimensions, vec2._dimensions );
+  }
+
+  void vector::createData( size_t dims ) {
+    _dimensions = dims;
+    _data = new double[_dimensions];
+  }
+
   vector::vector( size_t dimensions ) {
-    _dimensions = dimensions;
-    _data = new double[dimensions];
-    std::memset( _data, 0, dimensions * sizeof( double ) );
+    createData( dimensions );
+    std::memset( _data, 0, _dimensions * sizeof( double ) );
   }
 
   vector::vector( std::initializer_list<double> elems ) {
-    _dimensions = elems.size();
-    _data = new double[_dimensions];
+
+    createData( elems.size() );
+
     auto start = std::begin( elems );
     for ( int i = 0; i < _dimensions; i++ ) {
       _data[i] = *( start + i );
@@ -20,16 +31,12 @@ namespace ml
   }
 
   vector::vector( const vector& other ) {
-    _dimensions = other._dimensions;
-    _data = new double[_dimensions];
-    std::memcpy( _data, other._data, _dimensions * sizeof( double ) );
+    createData( other._dimensions );
+    std::copy( other._data, other._data + _dimensions, _data );
   }
 
   vector::vector( vector&& other ) noexcept {
-    _data = other._data;
-    _dimensions = other._dimensions;
-    other._data = nullptr;
-    other._dimensions = 0;
+    swap( *this, other );
   }
 
   vector::~vector() {
@@ -37,23 +44,13 @@ namespace ml
   }
 
   vector& vector::operator=( const vector& other ) {
-    if ( &other != this ) {
-      delete[] _data;
-      _dimensions = other._dimensions;
-      _data = new double[_dimensions];
-      std::memcpy( _data, other._data, _dimensions * sizeof( double ) );
-    }
+    vector temp( other );
+    swap( *this, temp );
     return *this;
   }
 
   vector& vector::operator=( vector&& other ) noexcept {
-    if ( this != &other ) {
-      delete[] _data;
-      _data = other._data;
-      _dimensions = other._dimensions;
-      other._data = nullptr;
-      other._dimensions = 0;
-    }
+    swap( *this, other );
     return *this;
   }
 
@@ -130,14 +127,14 @@ namespace ml
   vector vector::sub( size_t offset, size_t dimensions ) const {
     assert( offset + dimensions <= _dimensions );
     vector ret( dimensions );
-    std::memcpy( ret._data, _data + offset, dimensions * sizeof( double ) );
+    std::copy( _data + offset, _data + dimensions, ret._data );
     return ret;
   }
 
   vector vector::append( const vector& other ) const {
     vector ret( _dimensions + other._dimensions );
-    std::memcpy( ret._data, _data, _dimensions * sizeof( double ) );
-    std::memcpy( ret._data + _dimensions, other._data, other._dimensions * sizeof( double ) );
+    std::copy( _data, _data + _dimensions, ret._data );
+    std::copy( other._data, other._data + other._dimensions, ret._data + _dimensions );
     return ret;
   }
 

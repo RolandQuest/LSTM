@@ -21,9 +21,12 @@ namespace ml
 		size_t _rows = 0;
 		size_t _columns = 0;
 
+		void createData(size_t rows, size_t columns);
 		void deleteData();
 
 	public:
+
+		friend void swap( matrix& mat1, matrix& mat2 );
 
 		//! Creates an empty matrix.
 		matrix() = default;

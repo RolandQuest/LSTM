@@ -20,7 +20,11 @@ namespace ml {
     double* _data = nullptr;
     size_t _dimensions = 0;
 
+    void createData( size_t dims );
+
   public:
+
+    friend void swap( vector& vec1, vector& vec2 );
 
     //! Creates an empty vector.
     vector() = default;

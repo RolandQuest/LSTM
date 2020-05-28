@@ -1,5 +1,5 @@
 #ifndef TENSOR_H
-#define TENSOR_h
+#define TENSOR_H
 
 #include <initializer_list>
 
@@ -20,9 +20,15 @@ namespace ml
     int _totalDoubles = 0;
     tensor_shape _shape;
     
+    int calculateOffset( std::initializer_list<int> indices );
+
   public:
 
+    tensor() = default;
+
     tensor( std::initializer_list<int> shape );
+
+    tensor( const tensor_shape& shape );
 
     tensor( const tensor& other );
 

@@ -2,17 +2,56 @@
 #define TENSOR_SHAPE_H
 
 #include <initializer_list>
+#include <cstdint>
+
+using std::int32_t;
 
 namespace ml
 {
-  //! Basic meta-information for storing the shape of a tensor.
+  ///
+  /// Basic meta-information for storing the shape of a tensor.
+  /// A tensor is a block of contiguous memory partitioned in a particular way.
+  /// 
+  /// _____________________
+  ///|                     |
+  ///|      Dimension 1    |
+  ///|      Element 1      |
+  ///|                     |
+  ///|____________________ |
+  ///|                     |
+  ///|      Dimension 1    |
+  ///|      Element 2      |
+  ///|                     |
+  ///|____________________ |
+  /// shape => { 2 }
+  ///
+  /// If the outer dimension has multiple elements, then the entire memory space is divided
+  /// equally. For lower dimensions, each element of the outer dimension is further
+  /// divided accordingly.
+  /// 
+  /// _____________________
+  ///|     Dim:2 Elem:1    |<--- Start of Dimension 1, Element 1
+  ///|_____________________|
+  ///|     Dim:2 Elem:2    |
+  ///|_____________________|
+  ///|     Dim:2 Elem:3    |
+  ///|_____________________|
+  ///|     Dim:2 Elem:1    |<--- Start of Dimension 1, Element 2
+  ///|_____________________|
+  ///|     Dim:2 Elem:2    |
+  ///|_____________________|
+  ///|     Dim:2 Elem:3    |
+  ///|_____________________|
+  /// shape => { 2, 3 }
+  ///
   class tensor_shape
   {
 
   private:
 
-    int* _shape = nullptr;
-    int _dimensions = 0;
+    int32_t* _shape = nullptr;
+    int32_t* _elementSizes = nullptr;
+    int32_t _dimensions = 0;
 
   public:
 
@@ -20,7 +59,7 @@ namespace ml
     tensor_shape() = default;
 
     //! Creates a shape with given input.
-    tensor_shape( std::initializer_list<int> shape );
+    tensor_shape( std::initializer_list<int32_t> shape );
 
     //! Copy constructor.
     tensor_shape( const tensor_shape& other );
@@ -38,13 +77,14 @@ namespace ml
     tensor_shape& operator=( tensor_shape&& other ) noexcept;
 
     //! Returns the number of dimensions of the shape.
-    int size() const;
+    int dimensions() const;
 
-    //! Returns the size of a dimension.
-    int dimensionSize(int dimension) const;
+    //! Returns the number of elements in a dimension.
+    int elementCount(int dimension) const;
 
-    //! Returns the size of a dimension.
-    int operator[]( int dimension ) const;
+    //! Returns the size of an element for a dimension.
+    int elementSize( int dimension ) const;
+
   };
 }
 

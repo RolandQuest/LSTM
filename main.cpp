@@ -7,8 +7,9 @@
 
 #include "math/trainable_matrix.h"
 #include "math/tensor.h"
-
-
+#include "math/tensor_shape.h"
+#include "examples/mnist/mnist.h"
+#include "examples/idx_file.h"
 
 void init( ml::lstm& cell ) {
 
@@ -47,6 +48,13 @@ int main() {
 
   ml::tensor t = { 3, 3, 1, 9 };
 
+  ml::idx_file testImages( "examples/mnist/t10k-images.idx3-ubyte" );
+  ml::idx_file testLabels( "examples/mnist/t10k-labels.idx1-ubyte" );
+  ml::idx_file trainImages( "examples/mnist/train-images.idx3-ubyte" );
+  ml::idx_file trainLabels( "examples/mnist/train-labels.idx1-ubyte" );
+
+
+  std::cin.get();
 
 
 

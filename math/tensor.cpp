@@ -1,9 +1,19 @@
 #include "tensor.h"
 
 #include <memory>
+#include <assert.h>
 
 namespace ml
 {
+
+  int tensor::calculateOffset( std::initializer_list<int> indices ) {
+    int offset = 0;
+    auto start = indices.begin();
+    for ( int i = 0; i < indices.size(); i++ ) {
+      offset += *(start + i) * _shape.elementSize( i );
+    }
+    return offset;
+  }
 
   tensor::tensor( std::initializer_list<int> shape ) {
 
@@ -13,6 +23,7 @@ namespace ml
     }
     _shape = tensor_shape( shape );
     _data = new double[_totalDoubles];
+    std::memset( _data, 0, _totalDoubles * sizeof( double ) );
   }
 
   tensor::tensor( const tensor& other ) {
